@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+## Reference: https://blog.zenlinux.com/2011/02/how-to-setup-an-opensuse-chroot/comment-page-1/
+
+set -e
+
+function help {
+    echo "Usage: $0 <dist_directory>"
+}
+
+function setup_chroot {
+    if [ -d "$1" ]; then
+        echo Directory already exists 1>&2
+        exit 1
+    fi
+    mkdir $1
+    
+}
+
+if [ "$#" -ne 1 ]; then
+    help && exit 1
+fi
+
+setup_chroot $1
