@@ -13,8 +13,25 @@ function setup_chroot {
         echo Directory already exists 1>&2
         exit 1
     fi
-    mkdir $1
-    
+
+    DIST=`realpath $1`
+    LEAP_VERSION="15.1"
+
+    mkdir $DIST
+
+    ## Add repos
+    zypper --root $DIST ar http://download.opensuse.org/distribution/leap/"$LEAP_VERSION"/repo/oss/     oss
+    zypper --root $DIST ar http://download.opensuse.org/distribution/leap/"$LEAP_VERSION"/repo/non-oss/ non-oss
+    zypper --root $DIST ar http://download.opensuse.org/update/leap/"$LEAP_VERSION"/oss/                update-oss
+    zypper --root $DIST ar http://download.opensuse.org/update/leap/"$LEAP_VERSION"/non-oss/            update-non-oss
+
+    ## Copy /dev/zero
+    mkdir $DIST/dev
+    sudo cp -a /dev/zero $DIST/dev/
+
+    ## Install necessary packages
+    sudo zypper --root $DIST --gpg-auto-import-keys refresh
+    sudo zypper --root $DIST --gpg-auto-import-keys install -y rpm zypper wget vim
 }
 
 if [ "$#" -ne 1 ]; then
